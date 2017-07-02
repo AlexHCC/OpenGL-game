@@ -17,7 +17,7 @@ FILES 		=	main.cpp														\
 				utils/obj_loader.cpp											\
 				utils/string_utils.cpp
 
-NAME		=	opengl-game
+NAME		=	opengl-game.out
 CXX			=	g++
 LDFLAGS 	=	-lGL -lglut -lGLEW -lGLU -lglfw -lfreeimage -lX11 -lXxf86vm -lXrandr -lpthread -lXi
 CXXFLAGS	=	-I includes/ -std=c++17 -W -Wall -Werror $(LDFLAGS) -pedantic #-O3
