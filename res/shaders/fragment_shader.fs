@@ -8,6 +8,5 @@ uniform sampler2D diffuse_texture;
 
 void main()
 {
-    // Blame SOIL for that
-    color = texture(diffuse_texture, vec2(pass_texture_coords.x, 1 - pass_texture_coords.y));
+    color = texture(diffuse_texture, pass_texture_coords);
 }

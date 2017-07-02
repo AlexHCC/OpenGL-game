@@ -16,9 +16,9 @@ GLFWwindow* Window::create_window(uint16_t width, uint16_t height, const std::st
         is_glfw_init = true;
     }
 
-    // Antialiasing x4
-    // glfwWindowHint(GLFW_STENCIL_BITS, 4);
-    // glfwWindowHint(GLFW_SAMPLES, 4);
+    // MSAA x4
+    glfwWindowHint(GLFW_STENCIL_BITS, 4);
+    glfwWindowHint(GLFW_SAMPLES, 4);
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);

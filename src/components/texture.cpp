@@ -1,8 +1,9 @@
 #include "texture.h"
-#include <SOIL/SOIL.h>
+#include <FreeImage.h>
 #include <sys/stat.h>
 #include <stdexcept>
 #include <iostream>
+#include <cstdlib> // exit()
 
 GLuint Texture::create_texture_ID() const
 {
@@ -20,21 +21,37 @@ Texture::Texture(const std::string &location):
         throw std::invalid_argument("Could not read file " + location + ". File does not exist.\n");
     }
 
+    static bool is_free_image_init {false};
+    if (!is_free_image_init) FreeImage_Initialise(true);
+
+    FREE_IMAGE_FORMAT fif {FreeImage_GetFileType(location.c_str(), 0)};
+
+    if (fif == FIF_UNKNOWN)
+    {
+        throw std::invalid_argument("Texture format not recognized.\n");
+    }
+
+    FIBITMAP *bitmap {FreeImage_Load(fif, location.c_str())};
+    unsigned int bits_per_pixel {FreeImage_GetBPP(bitmap)};
+
+    if (bits_per_pixel != 32) bitmap = FreeImage_ConvertTo32Bits(bitmap);
+
+    unsigned int width {FreeImage_GetWidth(bitmap)};
+    unsigned int height {FreeImage_GetHeight(bitmap)};
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    int width, height;
-    unsigned char* image {SOIL_load_image(location.c_str(), &width, &height, 0, SOIL_LOAD_RGB)};
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     glBindTexture(GL_TEXTURE_2D, m_texture_ID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(bitmap));
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    SOIL_free_image_data(image);
+    FreeImage_Unload(bitmap);
+
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 

@@ -19,7 +19,7 @@ FILES 		=	main.cpp														\
 
 NAME		=	opengl-game
 CXX			=	g++
-LDFLAGS 	=	-lGL -lglut -lGLEW -lGLU -lglfw -lSOIL -lX11 -lXxf86vm -lXrandr -lpthread -lXi
+LDFLAGS 	=	-lGL -lglut -lGLEW -lGLU -lglfw -lfreeimage -lX11 -lXxf86vm -lXrandr -lpthread -lXi
 CXXFLAGS	=	-I includes/ -std=c++17 -W -Wall -Werror $(LDFLAGS) -pedantic #-O3
 
 SRC 		=	$(addprefix src/,$(FILES))
